@@ -5,6 +5,7 @@
  */
 package soap;
 
+import data_model.Database;
 import data_model.User;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
@@ -15,6 +16,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,13 +31,14 @@ public class DatabaseConnection {
    
    
 
-    private void start_connection() {
+    private void start_connection(String schema) {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
             con = DriverManager.getConnection(
                     "jdbc:derby://localhost:1527/WIZARD",
                     "root",
                     "root");
+            con.setSchema(schema);
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
             close_connection();
@@ -53,13 +56,29 @@ public class DatabaseConnection {
             }
         }
     }
+    
+        
+    private void create_schema(String database_name){
+        start_connection("ROOT");
+        if (con != null) {
+            try {
+                Statement statement = con.createStatement();
+                statement.executeUpdate("CREATE SCHEMA " + database_name + " AUTHORIZATION root");
+            } catch (SQLException ex) {
+                Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } finally{
+                close_connection();
+            }
+        }
+    }
 
-    private ResultSet get_registers(String query) {
-        start_connection();
+    private ResultSet execute_query(String query, String schema) {
+        start_connection(schema);
         if (con != null) {
             try {
                 Statement statement = con.createStatement();
                 ResultSet rs = statement.executeQuery(query);
+                
                 return rs;
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -68,19 +87,22 @@ public class DatabaseConnection {
         return null;
     }
     
-    private void update_register(String query){
-        start_connection();
+    private ResultSet execute_update(String query, String schema) {
+        start_connection(schema);
         if (con != null) {
             try {
                 Statement statement = con.createStatement();
                 statement.executeUpdate(query);
+                con.commit();
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
-            } finally{
-                close_connection();
             }
         }
+        return null;
     }
+    
+    
+    
     /**
      * Web service operation
      */
@@ -90,8 +112,7 @@ public class DatabaseConnection {
         User user = new User();
         try{
 
-            start_connection();
-            ResultSet rs = get_registers("SELECT * FROM USERS WHERE NAME = '" + username + "'");
+            ResultSet rs = execute_query("SELECT * FROM USRS WHERE NAME = '" + username + "'","ROOT");
             while(rs.next()) {
                 user.id = rs.getInt("ID");
                 user.name = rs.getString("NAME");
@@ -104,6 +125,46 @@ public class DatabaseConnection {
         }
 
         return user;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "createDatabase")
+    public boolean createDataBase(@WebParam(name = "iduser") int iduser, @WebParam(name = "databasename") String databasename) {
+        //TODO write your implementation code here:
+        create_schema(databasename);
+        close_connection();
+
+        String query = "INSERT INTO USRS_SCHEMAS VALUES (" + iduser + ", '" + databasename + "' )";
+        execute_update(query, "ROOT");
+        close_connection();
+        return false;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "getDatabases")
+    public ArrayList<Database> getDatabases(@WebParam(name = "iduser") int iduser) {
+        //TODO write your implementation code here:
+
+        ArrayList<Database> result = new ArrayList<Database>();
+        try{
+
+            ResultSet rs = execute_query("SELECT NAME_SCHEMA FROM USRS_SCHEMAS WHERE ID_USR = " + iduser + "", "ROOT");
+            while(rs.next()) {
+                Database dbs = new Database();
+                dbs.name = rs.getString("NAME_SCHEMA");
+                result.add(dbs);
+            }
+
+            close_connection(); 
+        }catch(Exception ex){
+            Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return result;
     }
     
     

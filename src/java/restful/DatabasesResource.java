@@ -13,49 +13,42 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
-import soap_client.User;
 
 /**
  * REST Web Service
  *
  * @author brb25
  */
-@Path("users")
-public class SOAPUsers {
+@Path("Databases")
+public class DatabasesResource {
 
     @Context
     private UriInfo context;
 
     /**
-     * Creates a new instance of SOAPUsers
+     * Creates a new instance of DatabasesResource
      */
-    public SOAPUsers() {
+    public DatabasesResource() {
     }
 
     /**
-     * Retrieves representation of an instance of restful.SOAPUsers
+     * Retrieves representation of an instance of restful.DatabasesResource
      * @return an instance of java.lang.String
      */
     @GET
     @Produces("application/xml")
     public String getXml() {
         //TODO return proper representation object
-       return "Ok :) " + getUserData("POLO").getName();
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * PUT method for updating or creating an instance of SOAPUsers
+     * PUT method for updating or creating an instance of DatabasesResource
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
     @Consumes("application/xml")
     public void putXml(String content) {
-    }
-
-    private static User getUserData(java.lang.String username) {
-        soap_client.DatabaseConnection_Service service = new soap_client.DatabaseConnection_Service();
-        soap_client.DatabaseConnection port = service.getDatabaseConnectionPort();
-        return port.getUserData(username);
     }
 }

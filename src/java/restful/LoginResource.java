@@ -5,6 +5,7 @@
  */
 package restful;
 
+import data_model.GenericResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -51,29 +52,29 @@ public class LoginResource {
      * @return an instance of java.lang.String
      */
     @POST
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.APPLICATION_XML)
-    public String postXML(User user,  @Context ServletContext context,
+    public GenericResponse postXML(User user,  @Context ServletContext context,
         @Context HttpServletRequest request,
         @Context HttpServletResponse response) {
         //TODO return proper representation object
 
          
         if (user.getPass().equals(getUserData(user.getName()).getPass())){
-         HttpSession session = request.getSession();
-         session.setMaxInactiveInterval(20*60);
-         session.setAttribute("connected_user", user.getName());
-           try {
-                String myJsfPage = "index.html";
-                context.getRequestDispatcher(myJsfPage).forward(request, response);
-            } catch (ServletException | IOException ex) {
-                
-            }
-         return "Ok :) " + getUserData("POLO").getName();
+            HttpSession session = request.getSession();
+            session.setMaxInactiveInterval(20*60);
+            session.setAttribute("connected_user", user.getName());
+            GenericResponse gr = new GenericResponse();
+            gr.respuesta = "si";
+             gr.mensaje = "none";
+            return gr;
 
         }
         else{
-          return "No " + user.getName() + " " + user.getPass();
+            GenericResponse gr = new GenericResponse();
+            gr.respuesta = "no";
+            gr.mensaje = "Revisa el usuario o la contraseña";
+            return gr;
         }
     }
     

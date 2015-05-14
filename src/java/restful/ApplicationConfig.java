@@ -29,9 +29,8 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(restful.DatabasesResource.class);
         resources.add(restful.LoginResource.class);
-        resources.add(restful.RESTFulTest.class);
-        resources.add(restful.SOAPUsers.class);
     }
     
 }
