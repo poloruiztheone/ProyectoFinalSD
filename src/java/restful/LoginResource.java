@@ -64,9 +64,10 @@ public class LoginResource {
             HttpSession session = request.getSession();
             session.setMaxInactiveInterval(20*60);
             session.setAttribute("connected_user", user.getName());
+            session.setAttribute("connected_user_id", user.getId());
             GenericResponse gr = new GenericResponse();
             gr.respuesta = "si";
-             gr.mensaje = "none";
+            gr.mensaje = "none";
             return gr;
 
         }
@@ -82,7 +83,7 @@ public class LoginResource {
     @Produces("application/xml")
     public String getXML() {
         //TODO return proper representation object
-        throw new UnsupportedOperationException();
+        return "<r>ok</r>";
     }
 
     /**

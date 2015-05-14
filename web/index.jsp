@@ -20,7 +20,7 @@ if (user == null){
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
-    <body>
+    <body onload="getDatabases();">
         <h1>Bienvenido  <%out.print(user);%></h1>
         <h3>Crear base de datos</h3>
         Nombre <input type="text" id="dbname" name="dbname"/>
@@ -30,7 +30,43 @@ if (user == null){
         <div id="MyDiv"></div>
         <h3>Mis bases de datos</h3>
         <table>
-            
+            <tr>
+                <td><input type="button" value="X"/></td>
+                <td><input type="text" size="50" disabled/></td>
+                <td><input type="button" value="Editar"/></td>
+            </tr>
         </table>
     </body>
 </html>
+
+
+<script>
+
+
+function getDatabases() {
+    var ajaxRequest;
+    var userid = <% out.print(sessionsa.getAttribute("connected_user_id")); %>;
+
+    var msg = '<user><id>' + userid + '</id></user>';
+    if (window.XMLHttpRequest){
+        ajaxRequest=new XMLHttpRequest(); // IE7+, Firefox, Chrome, Opera, Safari
+    } else {
+        ajaxRequest=new ActiveXObject("Microsoft.XMLHTTP"); // IE6, IE5
+    }
+    ajaxRequest.onreadystatechange = function(){
+        if (ajaxRequest.readyState==4 && (ajaxRequest.status==200 || ajaxRequest.status==204)){
+            xmlDoc=ajaxRequest.responseXML;
+            
+
+            respuesta = xmlDoc.getElementsByTagName("r")[0].childNodes[0].nodeValue;
+            alert(respuesta);
+           
+        }
+    }
+    
+    
+    ajaxRequest.open("GET", "http://localhost:8080/ProyectoFinalSD/webresources/databases", true /*async*/);
+    ajaxRequest.setRequestHeader("Content-Type", "application/xml");
+    ajaxRequest.send();
+}
+</script>

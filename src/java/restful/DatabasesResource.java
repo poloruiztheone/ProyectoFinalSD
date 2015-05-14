@@ -13,13 +13,16 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import soap_client.Database;
+import soap_client.User;
 
 /**
  * REST Web Service
  *
  * @author brb25
  */
-@Path("Databases")
+@Path("databases")
 public class DatabasesResource {
 
     @Context
@@ -36,10 +39,10 @@ public class DatabasesResource {
      * @return an instance of java.lang.String
      */
     @GET
-    @Produces("application/xml")
+    //@Consumes(MediaType.APPLICATION_XML) User user
     public String getXml() {
         //TODO return proper representation object
-        throw new UnsupportedOperationException();
+        return "<r>Okas</r>";
     }
 
     /**
@@ -50,5 +53,11 @@ public class DatabasesResource {
     @PUT
     @Consumes("application/xml")
     public void putXml(String content) {
+    }
+
+    private static java.util.List<Database> getDatabases(int iduser) {
+        soap_client.DatabaseConnection_Service service = new soap_client.DatabaseConnection_Service();
+        soap_client.DatabaseConnection port = service.getDatabaseConnectionPort();
+        return port.getDatabases(iduser);
     }
 }

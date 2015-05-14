@@ -16,4 +16,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Database {
     
     public String name;
+    
 }
