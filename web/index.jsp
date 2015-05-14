@@ -57,7 +57,7 @@ function getDatabases() {
         if (ajaxRequest.readyState==4 && (ajaxRequest.status==200 || ajaxRequest.status==204)){
             xmlDoc=ajaxRequest.responseXML;
             
-
+            
             respuesta = xmlDoc.getElementsByTagName("r")[0].childNodes[0].nodeValue;
             alert(respuesta);
            

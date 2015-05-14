@@ -40,6 +40,7 @@ public class DatabasesResource {
      */
     @GET
     //@Consumes(MediaType.APPLICATION_XML) User user
+    @Produces(MediaType.APPLICATION_XML)
     public String getXml() {
         //TODO return proper representation object
         return "<r>Okas</r>";
